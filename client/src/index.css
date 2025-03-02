@@ -1,0 +1,386 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    color: #1A0726;
+    background-color: #1A0726;
+    position: relative;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  font-family: "Poppins", sans-serif;
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  background-color: #091e3a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: auto auto;
+  border-radius: 6px;
+  background-color: #fff;
+}
+
+#login-text {
+  margin-bottom: 5px;
+}
+
+#Nacc,
+#Log {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 13px;
+}
+
+#Nacc > span,
+#Log > span {
+  color: #0900ff;
+  cursor: pointer;
+  margin-left: 6px;
+}
+
+#login-form {
+  margin-top: 40px;
+  position: relative;
+}
+
+#login-form > input {
+  display: flex;
+  flex: content;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 45px;
+  border: 1px solid #000;
+  border-radius: 2px;
+  margin-top: 22px;
+  font-size: 16px;
+}
+
+#login-form > input::placeholder {
+  color: #000;
+}
+
+#login-form > #uname {
+  position: relative;
+}
+
+#login-form > #upass {
+  position: relative;
+}
+
+#login-form > button {
+  display: flex;
+  flex: content;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 45px;
+  background-color: #2f0080;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 560;
+  border-radius: 4px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+}
+
+#person-icon {
+  position: absolute;
+  top: 32px;
+  left: 10px;
+  font-size: 26px;
+}
+
+#pass-icon {
+  position: absolute;
+  left: 10px;
+  font-size: 26px;
+  top: 98px;
+}
+
+#rem-me {
+  margin: 15px 0px 15px 0px;
+}
+
+#rem-me > input {
+  margin-right: 6px;
+  cursor: pointer;
+}
+
+#repass {
+  color: #0900ff;
+  text-decoration: underline;
+}
+
+#gglOAuth,
+#xOAuth {
+  font-size: 13px;
+  display: flex;
+  flex: content;
+  width: 280px;
+  height: 30px;
+  padding: 6px 10px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  border: 1px solid #000;
+  border-radius: 2px;
+  margin-top: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+#gglOAuth > #gglIcon,
+#xOAuth > #xIcon {
+  font-size: 20px;
+  margin-right: 10px;
+}
+
+#xOAuth > #xIcon {
+  font-size: 19px;
+}
+
+/* Signup page */
+#Cacc {
+  width: 280px;
+  height: 30px;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  background-color: #2f008099;
+  color: #fff;
+  padding: 25px 20px;
+  border-radius: 2px;
+  margin-top: 15px;
+}
+
+.container {
+  width: 280px;
+  justify-items: center;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+
+#username,
+#fullname,
+#password,
+#email {
+  display: flex;
+  flex: content;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 15px;
+  border: 1px solid #000;
+  border-radius: 2px;
+  margin-top: 22px;
+  font-size: 16px;
+}
+
+input::placeholder {
+  color: #000;
+}
+
+#signup,
+#qzBtn,
+#FpBtn {
+  background-color: #2f0080;
+  color: #fff;
+  border-radius: 2px;
+  padding: 8px 30px;
+  margin: 18px 0px;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 550;
+  cursor: pointer;
+}
+
+#qzC {
+  width: 600px;
+  height: fit-content;
+  padding: 15px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px;
+}
+
+#qzC > #qzH {
+  width: 100%;
+  display: flex;
+  justify-content: left;
+  align-items: start;
+  text-align: left;
+  position: relative;
+}
+
+#qzC > #qzH::after {
+  content: "";
+  position: absolute;
+  width: 50px;
+  background-color: #0900ff;
+  height: 3px;
+  top: 35px;
+  left: 23px;
+  border-radius: 50px;
+  transition: 0.6ms ease-in-out;
+}
+
+#qzC > .qs {
+  margin-top: 20px;
+  width: 80%;
+  text-align: left;
+}
+
+#qzC > .qs::before {
+  content: "Q. ";
+  font-weight: bold;
+}
+
+#quiz0 {
+  display: flex;
+  flex: content;
+  width: 80%;
+  border: 1.5px solid black;
+  border-radius: 3px;
+  padding: 5px 20px;
+  margin: 10px auto 0px;
+  outline: none;
+}
+
+#quiz1 {
+  margin-top: 5px;
+}
+
+#quiz1 > label {
+  width: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+#quiz1 > label span {
+  margin-left: 5px;
+}
+
+#Fpass {
+  width: 600px;
+  padding: 15px 20px;
+  position: fixed;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 15px;
+}
+
+#Fpass h1 {
+  font-size: 25px;
+  font-weight: bold;
+  text-align: left;
+  width: 100%;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  position: relative;
+  color: #1d8a41;
+}
+
+#Fpass > h1::after {
+  content: "";
+  position: absolute;
+  width: 150px;
+  background-color: #00753f;
+  height: 3px;
+  top: 32px;
+  left: 23px;
+  border-radius: 50px;
+  transition: 0.6ms ease-in-out;
+}
+
+#Fpass input {
+  display: flex;
+  flex: content;
+  width: 80%;
+  border: 1.5px solid #00753f;
+  border-radius: 3px;
+  padding: 5px 20px;
+  margin: 20px auto 15px;
+  outline: none;
+}
+
+#Fpass input::placeholder {
+  color: #091e3a;
+}
+
+#FpBtn {
+  background-color: #1d8a41 !important;
+  color: #091e3a;
+}
+
+.bgImgP {
+  margin-bottom: 70px;
+}
+
+.ldvioclr {
+  border: none !important;
+  color: white !important;
+  padding: 15px 50px !important;
+  border-radius: 3px !important;
+  font-size: 18px !important;
+}
+
+.ldvioclr::placeholder {
+  color: white;
+}
+
+#pIcon {
+  position: absolute;
+}
+
+.inputContainer > .pIcon {
+  top: 40px;
+  left: 15px;
+  font-size: 24px;
+}
+
+.inputContainer > button {
+  color: #fff;
+  font-weight: 900;
+  border-radius: 50px;
+  text-transform: uppercase;
+  font-size: 16px;
+  margin: 25px auto;
+  cursor: pointer;
+}
+
+.inputContainer > button .pIcon {
+  left: 130px;
+  top: 8px;
+  font-size: 24px;
+}
+
+.inputContainer > #pSignOut {
+  margin-top: 0px;
+  margin-bottom: 50px;
+}
