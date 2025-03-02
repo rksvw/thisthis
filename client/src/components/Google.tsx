@@ -1,5 +1,7 @@
 import React from "react";
-import { app } from "../firebase";
+import { app } from ".././firebase";
+import "../index.css";
+
 import { GoogleAuthProvider, signInWithPopup, getAuth } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
@@ -34,7 +36,7 @@ function Google() {
 
   return (
     <>
-      <button id="gglOAuth" type="button" onClick={handleGoogleClick}>
+      <button id="gglOAuth" type="button" onClick={handleGoogleClick} className="mb-5">
         <FcGoogle id="gglIcon" />
         <p>Sign in with Google</p>
       </button>

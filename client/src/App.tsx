@@ -7,6 +7,8 @@ import Quiz from "./components/Quiz";
 import ForgotPass from "./components/ForgotPass";
 import ProfilePage from "./pages/ProfilePage";
 import FooterComp from "./components/FooterComp";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
 
 function App() {
   return (
@@ -22,7 +24,7 @@ function App() {
         <Route path="/fgquiz" element={<Quiz />} />
       </Routes>
       <Routes>
-        <Route path="/login" element={} />
+        <Route path="/login" element={<LoginPage />} />
       </Routes>
       <Routes>
         <Route path="/signup" element={<SignupPage />} />

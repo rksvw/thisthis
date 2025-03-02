@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import "../index.css";
+
 import { useNavigate } from "react-router-dom";
 
 function ForgotPass() {
@@ -40,7 +42,7 @@ function ForgotPass() {
   };
   return (
     <>
-      <div className="card flex w-[440px] flex-col items-center justify-center text-center">
+      <div className="card flex w-[440px] flex-col items-center justify-center text-center my-96">
         <form id="Fpass" onSubmit={handleSubmit}>
           <h1>New Pasword</h1>
           <input

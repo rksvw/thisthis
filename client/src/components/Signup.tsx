@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Google from "./Google";
+import "../index.css";
+
 
 function Signup() {
   const [formData, setFormData] = useState({});
@@ -41,10 +43,10 @@ function Signup() {
   };
   return (
     <>
-      <div className="card flex w-[440px] flex-col items-center justify-center text-center">
-        <form onSubmit={handleSubmit}>
+      <div className="card flex w-[440px] my-32 flex-col items-center justify-center text-center">
+        <form onSubmit={handleSubmit} className="my-5">
           <div
-            className="flex w-[280px] flex-col items-center justify-center text-center"
+            className="flex w-[280px] flex-col items-center justify-center text-center py-5"
             id="CNacc"
           >
             <h1 className="flex items-center justify-center" id="Cacc">

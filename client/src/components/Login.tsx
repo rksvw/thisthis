@@ -3,6 +3,7 @@ import { MdOutlinePassword } from "react-icons/md";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Google from "./Google";
+import "../index.css";
 
 export default function Login() {
   const [formData, setFormData] = useState({});
@@ -49,8 +50,8 @@ export default function Login() {
 
   return (
     <>
-      <div className="card flex w-[440px] flex-col items-center justify-center text-center">
-        <div className="flex w-[280px] flex-col items-center justify-center">
+      <div className="card flex w-[440px] my-32 flex-col items-center justify-center text-center">
+        <div className="flex w-[280px] flex-col items-center justify-center py-6">
           <h1
             className="flex h-[50px] w-[280px] flex-col items-center justify-center bg-[#2F008099] text-[20px] font-bold text-[#fff]"
             id="login-text"

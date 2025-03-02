@@ -1,8 +1,10 @@
 import { Navbar, TextInput } from "flowbite-react";
 import { IoSearch } from "react-icons/io5";
 import { MdOutlinePerson } from "react-icons/md";
+import { useNavigate, Link } from "react-router";
 
 function Header() {
+  const navigate = useNavigate();
   return (
     <>
       <Navbar className="fixed left-0 top-0 z-20 w-full border-b-2 border-[#8900D9] bg-[#1A0726]">
@@ -21,24 +23,33 @@ function Header() {
         </form>
         <Navbar.Collapse>
           <Navbar.Link active={true} as={"div"}>
-            <span className="inline-block cursor-pointer self-center bg-gradient-to-b from-[#81C6FF] to-[#4F7EA4] bg-clip-text text-lg text-transparent">
+            <Link
+              to={"/"}
+              className="inline-block cursor-pointer self-center bg-gradient-to-b from-[#81C6FF] to-[#4F7EA4] bg-clip-text text-lg text-transparent"
+            >
               Home
-            </span>
+            </Link>
           </Navbar.Link>
           <Navbar.Link active={true} as={"div"}>
-            <span className="inline-block cursor-pointer self-center bg-gradient-to-b from-[#81C6FF] to-[#4F7EA4] bg-clip-text text-center text-lg text-transparent">
+            <Link
+              to={"/about"}
+              className="inline-block cursor-pointer self-center bg-gradient-to-b from-[#81C6FF] to-[#4F7EA4] bg-clip-text text-center text-lg text-transparent"
+            >
               About
-            </span>
+            </Link>
           </Navbar.Link>
           <Navbar.Link active={true} as={"div"}>
-            <span className="inline-block cursor-pointer self-center bg-gradient-to-b from-[#81C6FF] to-[#4F7EA4] bg-clip-text text-lg text-transparent">
+            <Link
+              to={"project"}
+              className="inline-block cursor-pointer self-center bg-gradient-to-b from-[#81C6FF] to-[#4F7EA4] bg-clip-text text-lg text-transparent"
+            >
               Projects
-            </span>
+            </Link>
           </Navbar.Link>
           <Navbar.Link active={true} as={"div"}>
-            <span className="ml-5 flex size-9 cursor-pointer self-center rounded-full bg-[#4F7EA4]">
+            <Link to={"/profile"} className="ml-5 flex size-9 cursor-pointer self-center rounded-full bg-[#4F7EA4]">
               <MdOutlinePerson className="flex w-full items-center self-center text-center text-xl text-[#06FF2F]" />
-            </span>
+            </Link>
           </Navbar.Link>
         </Navbar.Collapse>
       </Navbar>

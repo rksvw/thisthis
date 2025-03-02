@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "../index.css";
+
 
 function Quiz() {
   const [quizData, setQuizData] = useState({});
@@ -22,7 +24,7 @@ function Quiz() {
 
   return (
     <>
-      <div className="card flex w-[440px] flex-col items-center justify-center text-center">
+      <div className="card flex w-[440px] my-96 flex-col items-center justify-center text-center">
         <form
           id="qzC"
           className=" fixed w-1/2 bg-amber-50"

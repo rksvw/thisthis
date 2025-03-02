@@ -1,7 +1,7 @@
 function AboutPage() {
   return (
     <>
-      <section className="container mx-auto mt-24 w-4/5 self-center ">
+      <section className="container mx-auto mt-24 w-4/5 self-center flex flex-col">
         <h1 className="mb-5 mt-6 flex justify-center bg-gradient-to-t from-[#81C6FF] to-[#4F7EA4] bg-clip-text  text-center text-4xl font-bold text-transparent">
           Who we are?
         </h1>
@@ -34,7 +34,7 @@ function AboutPage() {
           </div>
         </div>
       </section>
-      <section className="container mx-auto mt-24 w-4/5 self-center">
+      <section className="container mx-auto mt-24 w-4/5 self-center flex flex-col">
         <h2 className="mb-5 self-center bg-gradient-to-t from-[#81C6FF] to-[#4F7EA4] bg-clip-text text-center text-4xl font-bold text-transparent">
           Social Conflicts
         </h2>
@@ -56,7 +56,7 @@ function AboutPage() {
           />
         </div>
       </section>
-      <section className="container mx-auto mb-16 mt-24 w-4/5 self-center">
+      <section className="container mx-auto mb-16 mt-24 w-4/5 self-center flex flex-col">
         <h2 className="mb-5 self-center bg-gradient-to-t from-[#81C6FF] to-[#4F7EA4] bg-clip-text text-center text-4xl font-bold text-transparent">
           Testimonial
         </h2>
