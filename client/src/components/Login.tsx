@@ -1,12 +1,21 @@
 import { IoMdPerson } from "react-icons/io";
 import { MdOutlinePassword } from "react-icons/md";
-import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Google from "./Google";
 import "../index.css";
+import { Alert, Spinner } from "flowbite-react";
+import { useState } from "react";
+import {
+  signInStart,
+  signInSuccess,
+  singInFailure,
+} from "../redux/user/userSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Login() {
   const [formData, setFormData] = useState({});
+  const { loading, error: errMessage } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -21,11 +30,17 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.email === "" || formData.password === "") {
-      console.log("Please fill out all required fields");
-      return;
+    if (
+      formData.email === "" ||
+      formData.password === "" ||
+      !formData.email ||
+      !formData.password
+    ) {
+      // console.log("Please fill out all required fields");
+      return dispatch(singInFailure("Please fill out all required fields."));
     }
     try {
+      dispatch(signInStart());
       const res = await fetch("/api/user/signin", {
         method: "POST",
         headers: {
@@ -35,22 +50,24 @@ export default function Login() {
       });
 
       const data = await res.json();
-      if (res.success === false) {
-        console.log("Data is not successed");
+      if (data.success === false) {
+        // console.log("Data is not successed");
+        dispatch(singInFailure(data.message));
       }
       if (res.ok) {
-        await handleUser(data);
+        dispatch(signInSuccess(data));
         navigate("/profile");
         // this.setState(userData);
       }
-    } catch (err) {
-      console.log("Facing Render Error: ", err.message);
+    } catch (error) {
+      // console.log("Facing Render Error: ", err.message);
+      dispatch(singInFailure(error.message));
     }
   };
 
   return (
     <>
-      <div className="card flex w-[440px] my-32 flex-col items-center justify-center text-center">
+      <div className="card my-32 flex w-[440px] flex-col items-center justify-center text-center">
         <div className="flex w-[280px] flex-col items-center justify-center py-6">
           <h1
             className="flex h-[50px] w-[280px] flex-col items-center justify-center bg-[#2F008099] text-[20px] font-bold text-[#fff]"
@@ -103,13 +120,26 @@ export default function Login() {
             <button
               type="submit"
               id="login"
+              disabled={loading}
               className="h-[39px] w-[158px] cursor-pointer"
             >
-              Login
+              {loading ? (
+                <>
+                  <Spinner size={"sm"} />
+                  <span className="pl-3">Loading...</span>
+                </>
+              ) : (
+                "Sign In"
+              )}
             </button>
           </form>
           <Google />
         </div>
+        {errMessage && (
+          <Alert className="mb-10" color={"failure"}>
+            {errMessage}
+          </Alert>
+        )}
       </div>
     </>
   );
