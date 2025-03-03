@@ -2,33 +2,88 @@ const { db } = require("../db/sql");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
-async function login (req, res) {
-  const {email, password} = req.body;
+async function updateUser(req, res) {
+  if (!req.params.id) {
+    res
+      .status(400)
+      .json({ message: "You are not allowed to update this user" });
+  }
+  const { username, email, password, bg_img, fullname } = req.body;
+  // let imageUrl = null;
+  try {
+    // uploading images
+
+    // if (req.body.profile_picture) {
+    //   imageUrl = `/uploads/${req.body.profile_picture}`;
+    // }
+
+    let hashPassword = password
+      ? await bcrypt.hash(password, saltRounds)
+      : null;
+
+    db.query(
+      "UPDATE users.access_user SET profile_picture = ?, username = ?, email = ?, password = COALESCE(?, password), bg_img = ?, fullname = ? WHERE id = ?",
+      [
+        req.body.profile_picture,
+        username,
+        email,
+        hashPassword,
+        bg_img,
+        fullname,
+        req.params.id,
+      ],
+      (err, result) => {
+        if (err) {
+          console.error("Database error: ", err);
+          return res.status(500).json({ message: "Database error." });
+        }
+        res.json({
+          id: req.params.id,
+          message: "User updated successfully",
+          bgImg: bg_img,
+          profile_picture: req.body.profile_picture,
+          email: email,
+          fullname: fullname,
+          username: username,
+        });
+      }
+    );
+  } catch (err) {
+    console.error("Error updating user profile:", err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+async function login(req, res) {
+  const { email, password } = req.body;
 
   if (!email || !password || email === "" || password === "") {
     res.status(400).send("All fields are required");
     return;
   }
   try {
-    const validUser = db.query("SELECT * FROM access_user WHERE email = ?", [email], async (err, results, fields) => {
-      if (err) {
-        console.log("Error executin query: ", err.stack);
-        res.status(400).send("Invalid User");
-        return;
+    const validUser = db.query(
+      "SELECT * FROM access_user WHERE email = ?",
+      [email],
+      async (err, results, fields) => {
+        if (err) {
+          console.log("Error executin query: ", err.stack);
+          res.status(400).send("Invalid User");
+          return;
+        }
+        console.log(results);
       }
-      console.log(results);
-    });
+    );
 
     if (!validUser) {
       res.status(400, "User not found");
       return;
     }
 
-    const validPassword = bcrypt.compareSync(password, validUser.password)
-  } catch(err) {
+    const validPassword = bcrypt.compareSync(password, validUser.password);
+  } catch (err) {
     console.log("A very big error here I got!");
   }
-
 }
 
 async function google(req, res) {
@@ -81,20 +136,24 @@ async function signup(req, res) {
 }
 
 async function forgotPass(req, res) {
-  const {newPassword,email} = req.body;
+  const { newPassword, email } = req.body;
   const hashPassword = await bcrypt.hash(newPassword, saltRounds);
   try {
-    db.query("UPDATE access_user SET password = ? WHERE email = ?",[hashPassword, email], function (err, results) {
-      if (err) {
-        res.send({
-          code: 400,
-          failed: "error occured",
-          err: err
-        });
-      } else {
-        res.status(201).send("User password updated successfully");
+    db.query(
+      "UPDATE access_user SET password = ? WHERE email = ?",
+      [hashPassword, email],
+      function (err, results) {
+        if (err) {
+          res.send({
+            code: 400,
+            failed: "error occured",
+            err: err,
+          });
+        } else {
+          res.status(201).send("User password updated successfully");
+        }
       }
-    })
+    );
   } catch (error) {
     console.log("A big forgotPass error: ", error.message);
   }
@@ -124,12 +183,13 @@ async function signin(req, res) {
                 code: 200,
                 success: "login successful",
                 id: results[0].id,
+                fullname: results[0].fullname,
                 username: results[0].username,
                 email: results[0].email,
                 profile_picture: results[0].profile_picture,
                 timeStamp: results[0].timestamps,
                 bgImg: results[0].bg_img,
-                isAdmin: results[0].isAdmin
+                isAdmin: results[0].isAdmin,
               });
             } else {
               res.send({
@@ -157,5 +217,6 @@ module.exports = {
   signin,
   google,
   forgotPass,
-  login
+  login,
+  updateUser,
 };

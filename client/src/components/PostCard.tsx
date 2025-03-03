@@ -2,7 +2,7 @@ function PostCard() {
   return (
     <>
       <div className="mx-auto my-5 flex w-4/5 justify-center self-center">
-        <div className="relative mx-auto my-5 flex w-4/5 flex-col justify-center rounded-2xl border-2 border-[#4F7EA4]">
+        <div className="relative mx-auto my-5 flex w-4/5 flex-col justify-center rounded-2xl border-2 border-[#4F7EA4] bg-white">
           <img
             src="https://cdn.pixabay.com/photo/2020/02/19/06/51/landscape-4861494_960_720.jpg"
             alt=""

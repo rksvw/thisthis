@@ -23,10 +23,6 @@ export default function Login() {
     console.log(formData);
   };
 
-  const handleUser = async (data) => {
-    localStorage.setItem("userData", JSON.stringify({ data }));
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 

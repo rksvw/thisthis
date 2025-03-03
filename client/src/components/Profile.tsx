@@ -3,57 +3,131 @@ import { IoPersonCircle } from "react-icons/io5";
 import { MdEmail } from "react-icons/md";
 import { MdOutlinePassword } from "react-icons/md";
 import { IoIosSend } from "react-icons/io";
+import {
+  updateStart,
+  updateSuccess,
+  updateFailure,
+} from "../redux/user/userSlice";
 import { PiSignOutFill } from "react-icons/pi";
 import "../index.css";
+import { useDispatch, useSelector } from "react-redux";
+
+const MAX_FILE_SIZE = 2 * 1024 * 1024;
 
 function Profile() {
   const [userData, setUserData] = useState({});
-  // const [imageSrc, setImageSrc] = useState("");
+  const [imageFileUploadError, setImageFileUploadError] = useState(null);
+  const [imageFileUploading, setImageFileUploading] = useState(null);
+  const [updateUserSuccess, setUpdateUserSuccess] = useState(null);
+  const [updateUserError, setUpdateUserError] = useState(null);
   const [bgimageFile, setBgImageFile] = useState(null);
   const [bgimageFileUrl, setBgImageFileUrl] = useState(null);
   const [uImageFile, setUImageFile] = useState(null);
   const [uImageFileUrl, setUImageFileUrl] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   const filePickerRef = useRef();
   const imagePickerRef = useRef();
+  const { currentUser, error, loading } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const defaultImage =
     "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg";
   const defaultBg =
     "https://wikitravel.org/upload/shared//6/6a/Default_Banner.jpg";
 
-  useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("userData"));
-    if (!data) {
-      console.log("Error occured data");
-      return;
-    }
-    if (data) {
-      setUserData(data.data);
-    }
-    if (userData && userData.profile_picture) {
-      const buffer = userData.profile_picture.data;
-      const base64String = buffer.toString("base64");
-      setUImageFileUrl(base64String);
-    } else {
-      setUImageFileUrl(defaultImage);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const data = JSON.parse(localStorage.getItem("userData"));
+  //   if (!data) {
+  //     console.log("Error occured data");
+  //     return;
+  //   }
+  //   if (data) {
+  //     setUserData(data.data);
+  //   }
+  //   if (currentUser && currentUser.profile_picture) {
+  //     const buffer = currentUser.profile_picture.data;
+  //     const base64String = buffer.toString("base64");
+  //     setUImageFileUrl(base64String);
+  //   } else {
+  //     setUImageFileUrl(null);
+  //   }
+  // }, []);
+
   const handleUserBgImage = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setBgImageFile(file);
-      setBgImageFileUrl(URL.createObjectURL(file));
+    console.log(file.size);
+    if (file.size > MAX_FILE_SIZE) {
+      setImageFileUploadError("File size exceeds 2MB limit.");
+      return;
     }
+    setImageFileUploading(true);
+    setImageFileUploadError(null);
+
+    setUserData({
+      ...userData,
+      [e.target.id]: URL.createObjectURL(file),
+    });
   };
 
   const handleUserImage = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setUImageFile(file);
-      setUImageFileUrl(URL.createObjectURL(file));
+    console.log(file.size);
+    if (file.size > MAX_FILE_SIZE) {
+      setImageFileUploadError("File size exceeds 2MB limit.");
+      return;
     }
+    setImageFileUploading(true);
+    setImageFileUploadError(null);
+    console.log(e.target.id);
+
+    setUserData({
+      ...userData,
+      [e.target.id]: URL.createObjectURL(file),
+    });
   };
 
-  const handleSubmit = async () => {};
+  const handleChange = (e) => {
+    setUserData({ ...userData, [e.target.id]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setUpdateUserError(null);
+    setUpdateUserSuccess(null);
+
+    // If the userData Array is empty it returns 0 size of array
+    if (Object.keys(userData).length === 0) {
+      setUpdateUserError("No changes made");
+      return;
+    }
+
+    try {
+      dispatch(updateStart());
+      const res = await fetch(`api/user/upload/${currentUser.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: currentUser.username,
+          fullname: currentUser.fullname,
+          email: currentUser.email,
+          ...userData,
+        }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        dispatch(updateFailure(data.message));
+        setUpdateUserError(data.message);
+      } else {
+        dispatch(updateSuccess(data));
+        setUpdateUserSuccess("User's profile updated successfully");
+      }
+    } catch (err) {
+      dispatch(updateFailure(err.message));
+      setUpdateUserError(err.message);
+    }
+  };
 
   return (
     <>
@@ -61,18 +135,18 @@ function Profile() {
         <form onSubmit={handleSubmit} className="relative flex flex-col gap-2">
           <input
             type="file"
-            id="inputImage"
+            id="bg_img"
             accept="image/*"
             onChange={handleUserBgImage}
             ref={filePickerRef}
             hidden
           />
           <div
-            className="w-full bgImgP relative h-44 cursor-pointer self-center overflow-hidden rounded-t-2xl"
+            className="bgImgP relative h-44 w-full cursor-pointer self-center overflow-hidden rounded-t-2xl"
             onClick={() => filePickerRef.current.click()}
           >
             <img
-              src={bgimageFileUrl || defaultBg}
+              src={currentUser.bgImg.toString("base64") || defaultBg}
               alt="user"
               className="absolute size-full object-cover"
             />
@@ -80,6 +154,7 @@ function Profile() {
           <input
             type="file"
             name="userImage"
+            id="profile_picture"
             accept="image/*"
             onChange={handleUserImage}
             ref={imagePickerRef}
@@ -90,55 +165,58 @@ function Profile() {
             onClick={() => imagePickerRef.current.click()}
           >
             <img
-              src={uImageFileUrl || defaultImage}
+              src={currentUser.profile_picture.toString("base64") || defaultImage}
               alt=""
               className="size-full rounded-full border-4 border-[lightgray] object-cover"
             />
           </div>
-          <div className="inputContainer w-4/5 relative self-center">
+          <div className="inputContainer relative w-4/5 self-center">
             <input
               type="text"
               id="username"
               placeholder="username"
               className="ldvioclr mt-1.5 w-full self-center rounded-lg bg-gradient-to-r from-violet-300 to-violet-500 outline-none backdrop-blur-2xl"
-              defaultValue={userData.username}
+              defaultValue={currentUser.username}
+              onChange={handleChange}
             />
             <IoPersonCircle className="pIcon absolute" />
           </div>
-          <div className="inputContainer w-4/5 relative self-center">
+          <div className="inputContainer relative w-4/5 self-center">
             <input
               type="email"
               id="email"
               placeholder="email"
-              className="ldvioclr flex-1 w-full mt-1.5 self-center rounded-lg bg-gradient-to-r from-violet-300 to-violet-500 outline-none backdrop-blur-2xl"
-              defaultValue={userData.email}
+              className="ldvioclr mt-1.5 w-full flex-1 self-center rounded-lg bg-gradient-to-r from-violet-300 to-violet-500 outline-none backdrop-blur-2xl"
+              defaultValue={currentUser.email}
+              onChange={handleChange}
             />
             <MdEmail className="pIcon absolute" />
           </div>
-          <div className="inputContainer w-4/5 relative self-center">
+          <div className="inputContainer relative w-4/5 self-center">
             <input
               type="password"
               name="password"
               id="password"
               className=" ldvioclr mt-1.5 w-full self-center rounded-lg bg-gradient-to-r from-violet-300 to-violet-500 outline-none backdrop-blur-2xl"
               placeholder="password"
+              onChange={handleChange}
             />
             <MdOutlinePassword className="pIcon absolute" />
           </div>
-          <div className="inputContainer w-4/5 relative self-center">
+          <div className="inputContainer relative w-4/5 self-center">
             <button
               type="submit"
-              className="  mt-1.5 w-full h-10 self-center rounded-lg bg-gradient-to-r from-violet-300 via-[#cc00ff] to-violet-300 outline-none backdrop-blur-2xl"
+              className="  mt-1.5 h-10 w-full self-center rounded-lg bg-gradient-to-r from-violet-300 via-[#cc00ff] to-violet-300 outline-none backdrop-blur-2xl"
               id="pSubmit"
             >
               <IoIosSend className="pIcon absolute" />
               Update
             </button>
           </div>
-          <div className="inputContainer w-4/5 relative self-center">
+          <div className="inputContainer relative w-4/5 self-center">
             <button
               type="submit"
-              className=" mt-1.5 w-full h-10 self-center rounded-lg bg-gradient-to-r from-red-300 via-[#FFC300] to-red-300 outline-none backdrop-blur-2xl"
+              className=" mt-1.5 h-10 w-full self-center rounded-lg bg-gradient-to-r from-red-300 via-[#FFC300] to-red-300 outline-none backdrop-blur-2xl"
               id="pSignOut"
             >
               <PiSignOutFill className="pIcon absolute" />
