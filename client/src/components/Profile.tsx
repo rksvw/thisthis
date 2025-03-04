@@ -12,7 +12,7 @@ import { PiSignOutFill } from "react-icons/pi";
 import "../index.css";
 import { useDispatch, useSelector } from "react-redux";
 
-const MAX_FILE_SIZE = 2 * 1024 * 1024;
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 function Profile() {
   const [userData, setUserData] = useState({});
@@ -92,11 +92,8 @@ function Profile() {
         formData.append("bg_img", bgimageFile);
       }
 
-      const res = await fetch(`api/user/upload/${currentUser.id}`, {
+      const res = await fetch(`api/user/upload/${currentUser._id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: formData,
       });
       const data = await res.json();
@@ -131,7 +128,7 @@ function Profile() {
             onClick={() => filePickerRef.current.click()}
           >
             <img
-              src={currentUser.bgImg.toString("base64") || defaultBg}
+              src={`http://localhost:3000${currentUser.bgImage}` || defaultBg}
               alt="user"
               className="absolute size-full object-cover"
             />
@@ -151,7 +148,8 @@ function Profile() {
           >
             <img
               src={
-                currentUser.profile_picture.toString("base64") || defaultImage
+                `http://localhost:3000${currentUser.profilePicture}` ||
+                defaultImage
               }
               alt=""
               className="size-full rounded-full border-4 border-[lightgray] object-cover"

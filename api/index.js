@@ -8,15 +8,25 @@ const { updateUser } = require("./controllers/user.controller");
 const app = express();
 
 const port = 3000;
-const upload = multer({
-  dest: "uploads/", // Folder to store images
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB limit
-});
 
+const storage = multer.diskStorage({
+  destination: "uploads/",
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+const upload = multer({ storage });
+
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use(bodyParser.json());
-app.use(express.json());
 app.use("/api/user", userRoutes);
-app.put("/api/user/upload/:id", upload.fields([{name: "profile_picture"}, {name: "bg_img"}]), updateUser);
+app.put(
+  "/api/user/upload/:id",
+  upload.fields([{ name: "profile_picture" }, { name: "bg_img" }]),
+  updateUser
+);
+app.use("/uploads", express.static("uploads"));
 
 app.use(cors());
 

@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 async function updateUser(req, res) {
+  const _id = req.params.id;
   const { username, email, fullname } = req.body;
   const profilePicture = req.files["profile_picture"]
     ? `/uploads/${req.files["profile_picture"][0].filename}`
@@ -24,14 +25,7 @@ async function updateUser(req, res) {
     //   : null;
     const query =
       "UPDATE users.access_user SET username=?, fullname=?, email=?, profile_picture=?, bg_img=? WHERE id=?";
-    const values = [
-      username,
-      fullname,
-      email,
-      profilePicture,
-      bgImage,
-      req.params.id,
-    ];
+    const values = [username, fullname, email, profilePicture, bgImage, _id];
 
     db.query(query, values, (err, result) => {
       if (err) {
@@ -41,6 +35,10 @@ async function updateUser(req, res) {
         message: "Profile updated successfully",
         profilePicture,
         bgImage,
+        username,
+        _id,
+        fullname,
+        email,
       });
     });
   } catch (err) {
