@@ -3,51 +3,46 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 async function updateUser(req, res) {
-  if (!req.params.id) {
-    res
-      .status(400)
-      .json({ message: "You are not allowed to update this user" });
-  }
-  const { username, email, password, bg_img, fullname } = req.body;
-  // let imageUrl = null;
+  const { username, email, fullname } = req.body;
+  const profilePicture = req.files["profile_picture"]
+    ? `/uploads/${req.files["profile_picture"][0].filename}`
+    : null;
+  const bgImage = req.files["bg_img"]
+    ? `/uploads/${req.files["bg_img"][0].filename}`
+    : null;
+
+  let imageUrl = null;
   try {
     // uploading images
 
-    // if (req.body.profile_picture) {
-    //   imageUrl = `/uploads/${req.body.profile_picture}`;
-    // }
+    if (req.body.profile_picture) {
+      imageUrl = `/uploads/${req.body.profile_picture}`;
+    }
 
-    let hashPassword = password
-      ? await bcrypt.hash(password, saltRounds)
-      : null;
+    // let hashPassword = password
+    //   ? await bcrypt.hash(password, saltRounds)
+    //   : null;
+    const query =
+      "UPDATE users.access_user SET username=?, fullname=?, email=?, profile_picture=?, bg_img=? WHERE id=?";
+    const values = [
+      username,
+      fullname,
+      email,
+      profilePicture,
+      bgImage,
+      req.params.id,
+    ];
 
-    db.query(
-      "UPDATE users.access_user SET profile_picture = ?, username = ?, email = ?, password = COALESCE(?, password), bg_img = ?, fullname = ? WHERE id = ?",
-      [
-        req.body.profile_picture,
-        username,
-        email,
-        hashPassword,
-        bg_img,
-        fullname,
-        req.params.id,
-      ],
-      (err, result) => {
-        if (err) {
-          console.error("Database error: ", err);
-          return res.status(500).json({ message: "Database error." });
-        }
-        res.json({
-          id: req.params.id,
-          message: "User updated successfully",
-          bgImg: bg_img,
-          profile_picture: req.body.profile_picture,
-          email: email,
-          fullname: fullname,
-          username: username,
-        });
+    db.query(query, values, (err, result) => {
+      if (err) {
+        return res.status(500).json({ message: "Database error." });
       }
-    );
+      res.json({
+        message: "Profile updated successfully",
+        profilePicture,
+        bgImage,
+      });
+    });
   } catch (err) {
     console.error("Error updating user profile:", err);
     res.status(500).json({ message: "Internal Server Error" });

@@ -16,7 +16,7 @@ const upload = multer({
 app.use(bodyParser.json());
 app.use(express.json());
 app.use("/api/user", userRoutes);
-app.put("/api/user/upload/:id", upload.single("image"), updateUser);
+app.put("/api/user/upload/:id", upload.fields([{name: "profile_picture"}, {name: "bg_img"}]), updateUser);
 
 app.use(cors());
 

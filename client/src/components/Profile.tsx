@@ -34,27 +34,8 @@ function Profile() {
   const defaultBg =
     "https://wikitravel.org/upload/shared//6/6a/Default_Banner.jpg";
 
-  // useEffect(() => {
-  //   const data = JSON.parse(localStorage.getItem("userData"));
-  //   if (!data) {
-  //     console.log("Error occured data");
-  //     return;
-  //   }
-  //   if (data) {
-  //     setUserData(data.data);
-  //   }
-  //   if (currentUser && currentUser.profile_picture) {
-  //     const buffer = currentUser.profile_picture.data;
-  //     const base64String = buffer.toString("base64");
-  //     setUImageFileUrl(base64String);
-  //   } else {
-  //     setUImageFileUrl(null);
-  //   }
-  // }, []);
-
   const handleUserBgImage = (e) => {
     const file = e.target.files[0];
-    console.log(file.size);
     if (file.size > MAX_FILE_SIZE) {
       setImageFileUploadError("File size exceeds 2MB limit.");
       return;
@@ -62,10 +43,8 @@ function Profile() {
     setImageFileUploading(true);
     setImageFileUploadError(null);
 
-    setUserData({
-      ...userData,
-      [e.target.id]: URL.createObjectURL(file),
-    });
+    setBgImageFile(file);
+    setBgImageFileUrl(URL.createObjectURL(file));
   };
 
   const handleUserImage = (e) => {
@@ -77,12 +56,9 @@ function Profile() {
     }
     setImageFileUploading(true);
     setImageFileUploadError(null);
-    console.log(e.target.id);
 
-    setUserData({
-      ...userData,
-      [e.target.id]: URL.createObjectURL(file),
-    });
+    setUImageFile(file);
+    setUImageFileUrl(URL.createObjectURL(file));
   };
 
   const handleChange = (e) => {
@@ -95,24 +71,33 @@ function Profile() {
     setUpdateUserSuccess(null);
 
     // If the userData Array is empty it returns 0 size of array
-    if (Object.keys(userData).length === 0) {
+    if (!uImageFile && !bgimageFile && Object.keys(userData).length === 0) {
       setUpdateUserError("No changes made");
       return;
     }
 
     try {
       dispatch(updateStart());
+
+      const formData = new FormData();
+      formData.append("username", userData.username || currentUser.username);
+      formData.append("fullname", userData.fullname || currentUser.fullname);
+      formData.append("email", userData.email || currentUser.email);
+
+      if (uImageFile) {
+        formData.append("profile_picture", uImageFile);
+      }
+
+      if (bgimageFile) {
+        formData.append("bg_img", bgimageFile);
+      }
+
       const res = await fetch(`api/user/upload/${currentUser.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          username: currentUser.username,
-          fullname: currentUser.fullname,
-          email: currentUser.email,
-          ...userData,
-        }),
+        body: formData,
       });
       const data = await res.json();
 
@@ -165,7 +150,9 @@ function Profile() {
             onClick={() => imagePickerRef.current.click()}
           >
             <img
-              src={currentUser.profile_picture.toString("base64") || defaultImage}
+              src={
+                currentUser.profile_picture.toString("base64") || defaultImage
+              }
               alt=""
               className="size-full rounded-full border-4 border-[lightgray] object-cover"
             />
