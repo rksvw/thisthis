@@ -29,10 +29,9 @@ function Profile() {
   const imagePickerRef = useRef();
   const { currentUser, error, loading } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const defaultImage =
-    "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg";
-  const defaultBg =
-    "https://wikitravel.org/upload/shared//6/6a/Default_Banner.jpg";
+
+  const profile_picture = `/uploads/blank-profile-picture-973460_1280.png`;
+  const bgImg = `/uploads/30510.jpg`;
 
   const handleUserBgImage = (e) => {
     const file = e.target.files[0];
@@ -128,7 +127,7 @@ function Profile() {
             onClick={() => filePickerRef.current.click()}
           >
             <img
-              src={`http://localhost:3000${currentUser.bgImage}` || defaultBg}
+              src={`http://localhost:3000${currentUser.bgImage || bgImg}`}
               alt="user"
               className="absolute size-full object-cover"
             />
@@ -147,10 +146,9 @@ function Profile() {
             onClick={() => imagePickerRef.current.click()}
           >
             <img
-              src={
-                `http://localhost:3000${currentUser.profilePicture}` ||
-                defaultImage
-              }
+              src={`http://localhost:3000${
+                currentUser.profilePicture === null ? false : currentUser.profilePicture || profile_picture
+              }`}
               alt=""
               className="size-full rounded-full border-4 border-[lightgray] object-cover"
             />

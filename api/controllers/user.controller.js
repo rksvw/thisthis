@@ -12,13 +12,9 @@ async function updateUser(req, res) {
     ? `/uploads/${req.files["bg_img"][0].filename}`
     : null;
 
-  let imageUrl = null;
+    console.log(bgImage);
   try {
     // uploading images
-
-    if (req.body.profile_picture) {
-      imageUrl = `/uploads/${req.body.profile_picture}`;
-    }
 
     // let hashPassword = password
     //   ? await bcrypt.hash(password, saltRounds)
@@ -107,25 +103,54 @@ async function google(req, res) {
 
 // Create a new user
 async function signup(req, res) {
-  const profile_picture =
-    "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
   const isAdmin = false;
   const password = req.body.password;
   const encryptedPassword = await bcrypt.hash(password, saltRounds);
 
   const { fullname, username, email } = req.body;
-  db.query(
-    "INSERT INTO access_user (fullname, username, email, password, isAdmin, profile_picture) VALUE ( ?, ?, ?, ?, ?, ?)",
-    [fullname, username, email, encryptedPassword, isAdmin, profile_picture],
-    (err, result) => {
+
+  const queryInsert =
+    "INSERT INTO access_user (fullname, username, email, password, isAdmin) VALUES ( ?, ?, ?, ?, ?)";
+  const valuesInsert = [
+    fullname,
+    username,
+    email,
+    encryptedPassword,
+    isAdmin,
+  ];
+  const querySelect = "SELECT * FROM users.access_user WHERE id = ?";
+
+  try {
+    db.query(queryInsert, valuesInsert, (err, results) => {
       if (err) {
-        console.log("Error executing query: ", err.stack);
         res.status(400).send("Error creating user");
         return;
       }
-      res.status(201).send("User created successfully");
-    }
-  );
+      -(
+        // After Inserting Retrive the data
+
+        db.query(querySelect, [results.insertId], (err, rows) => {
+          if (err) {
+            return res.status(500).json({ error: "Database retrieval failed" });
+          } else {
+            res.json({
+              message: "Data inserted successfully",
+              _id: rows[0].id,
+              fullname: rows[0].fullname,
+              username: rows[0].username,
+              email: rows[0].email,
+              isAdmin: rows[0].isAdmin,
+              timestamps: rows[0].timestamps,
+              profile_picture: rows[0].profile_picture,
+              bgImg: rows[0].bg_img,
+            });
+          }
+        })
+      );
+    });
+  } catch (error) {
+    console.log(`Got an SignUp Error: ${error.message}`);
+  }
 }
 
 async function forgotPass(req, res) {
@@ -175,7 +200,7 @@ async function signin(req, res) {
               res.send({
                 code: 200,
                 success: "login successful",
-                id: results[0].id,
+                _id: results[0].id,
                 fullname: results[0].fullname,
                 username: results[0].username,
                 email: results[0].email,

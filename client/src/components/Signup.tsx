@@ -1,11 +1,20 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Google from "./Google";
+import { useDispatch, UseDispatch, useSelector } from "react-redux";
 import "../index.css";
-
+import {
+  signInStart,
+  signInSuccess,
+  singInFailure,
+} from "../redux/user/userSlice";
+import { Spinner } from "flowbite-react";
 
 function Signup() {
   const [formData, setFormData] = useState({});
+  const { loading, error: errmessage } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
@@ -20,9 +29,10 @@ function Signup() {
       !formData.email ||
       !formData.password
     ) {
-      console.log("Please fill out all fields");
+      dispatch(singInFailure("Please fill out all fields"));
     }
     try {
+      dispatch(signInStart());
       const res = await fetch("/api/user/signup", {
         method: "POST",
         headers: {
@@ -32,10 +42,11 @@ function Signup() {
       });
       const data = await res.json();
       if (data.success === false) {
-        console.log("Data is not successed");
+        dispatch(singInFailure("Data is not successed"));
       }
       if (res.ok) {
-        console.log(data);
+        dispatch(signInSuccess(data));
+        navigate("/profile");
       }
     } catch (err) {
       console.log("Facing Render Error: ", err.message);
@@ -43,10 +54,10 @@ function Signup() {
   };
   return (
     <>
-      <div className="card flex w-[440px] my-32 flex-col items-center justify-center text-center">
+      <div className="card my-32 flex w-[440px] flex-col items-center justify-center text-center">
         <form onSubmit={handleSubmit} className="my-5">
           <div
-            className="flex w-[280px] flex-col items-center justify-center text-center py-5"
+            className="flex w-[280px] flex-col items-center justify-center py-5 text-center"
             id="CNacc"
           >
             <h1 className="flex items-center justify-center" id="Cacc">
@@ -96,9 +107,15 @@ function Signup() {
               placeholder="********"
             />
           </div>
-
           <button type="submit" id="signup">
-            Sign up
+            {loading ? (
+              <>
+                <Spinner size={"sm"} />
+                <span className="pl-3">Loading...</span>
+              </>
+            ) : (
+              "Sign up"
+            )}
           </button>
           <Google />
         </form>
