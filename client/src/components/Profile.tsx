@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { IoPersonCircle } from "react-icons/io5";
 import { MdEmail } from "react-icons/md";
 import { MdOutlinePassword } from "react-icons/md";
@@ -7,10 +7,12 @@ import {
   updateStart,
   updateSuccess,
   updateFailure,
+  signoutSuccess,
 } from "../redux/user/userSlice";
 import { PiSignOutFill } from "react-icons/pi";
 import "../index.css";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
@@ -29,9 +31,15 @@ function Profile() {
   const imagePickerRef = useRef();
   const { currentUser, error, loading } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const profile_picture = `/uploads/blank-profile-picture-973460_1280.png`;
   const bgImg = `/uploads/30510.jpg`;
+
+  const handleSignOut = async () => {
+    dispatch(signoutSuccess());
+    navigate("/");
+  };
 
   const handleUserBgImage = (e) => {
     const file = e.target.files[0];
@@ -147,7 +155,9 @@ function Profile() {
           >
             <img
               src={`http://localhost:3000${
-                currentUser.profilePicture === null ? false : currentUser.profilePicture || profile_picture
+                currentUser.profilePicture === null
+                  ? false
+                  : currentUser.profilePicture || profile_picture
               }`}
               alt=""
               className="size-full rounded-full border-4 border-[lightgray] object-cover"
@@ -201,6 +211,7 @@ function Profile() {
               type="submit"
               className=" mt-1.5 h-10 w-full self-center rounded-lg bg-gradient-to-r from-red-300 via-[#FFC300] to-red-300 outline-none backdrop-blur-2xl"
               id="pSignOut"
+              onClick={handleSignOut}
             >
               <PiSignOutFill className="pIcon absolute" />
               logout

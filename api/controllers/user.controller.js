@@ -12,7 +12,6 @@ async function updateUser(req, res) {
     ? `/uploads/${req.files["bg_img"][0].filename}`
     : null;
 
-    console.log(bgImage);
   try {
     // uploading images
 
@@ -87,13 +86,29 @@ async function google(req, res) {
     db.query(
       "INSERT INTO access_user ( fullname, username, email, password, isAdmin, profile_picture) VALUE (?, ?, ?, ?, ?, ? )",
       [fullname, username, email, hashPassword, isAdmin, googlePhotoUrl],
-      (err, result) => {
+      (err, results) => {
         if (err) {
           console.log("Error executing query: ", err.stack);
           res.status(400).send("Error creating user");
           return;
         }
-        res.status(201).send("User created successfully");
+        db.query("SELECT * FROM users.access_user WHERE id = ?", [results.insertId], (err, rows) => {
+          if (err) {
+            return res.status(500).json({ error: "Database retrieval failed" });
+          } else {
+            res.json({
+              message: "User created successfully",
+              _id: rows[0].id,
+              fullname: rows[0].fullname,
+              username: rows[0].username,
+              email: rows[0].email,
+              isAdmin: rows[0].isAdmin,
+              timestamps: rows[0].timestamps,
+              profile_picture: rows[0].profile_picture,
+              bgImg: rows[0].bg_img,
+            });
+          }
+        })
       }
     );
   } catch (error) {
@@ -111,13 +126,7 @@ async function signup(req, res) {
 
   const queryInsert =
     "INSERT INTO access_user (fullname, username, email, password, isAdmin) VALUES ( ?, ?, ?, ?, ?)";
-  const valuesInsert = [
-    fullname,
-    username,
-    email,
-    encryptedPassword,
-    isAdmin,
-  ];
+  const valuesInsert = [fullname, username, email, encryptedPassword, isAdmin];
   const querySelect = "SELECT * FROM users.access_user WHERE id = ?";
 
   try {
