@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const multer = require("multer");
 const userRoutes = require("./routes/user.route");
+const postRoutes = require("./routes/post.route");
 const { updateUser } = require("./controllers/user.controller");
 const app = express();
 
@@ -21,6 +22,7 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use(bodyParser.json());
 app.use("/api/user", userRoutes);
+app.use("/api/article", postRoutes);
 app.put(
   "/api/user/upload/:id",
   upload.fields([{ name: "profile_picture" }, { name: "bg_img" }]),
