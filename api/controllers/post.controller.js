@@ -1,16 +1,146 @@
 const { db } = require("../db/sql");
+const util = require("util");
 
 async function getPosts(req, res) {
-  const query = "SELECT * FROM access_article ORDER BY postId DESC LIMIT 3 ";
-  db.query(query, (err, results) => {
-    if (err) {
-      console.log("Error: ", err.stack);
-      return;
+  // Convert db.query() to return Promises
+  db.query = util.promisify(db.query);
+  try {
+    const {
+      userId,
+      category,
+      slug,
+      postId,
+      searchTerm,
+      sortDirection,
+      startIndex,
+      limit,
+    } = req.query;
+    // const whereCodition = {
+    //   ...(userId && { userId }),
+    //   ...(category && { category }),
+    //   ...(slug && { slug }),
+    //   ...(postId && { postId }),
+    //   ...(searchTerm && {
+    //     [Op.or]: [
+    //       { title: { [Op.like]: `%${searchTerm}%` } },
+    //       { content: { [Op.like]: `%${searchTerm}%` } },
+    //     ],
+    //   }),
+    // };
+    let query = "SELECT * FROM access_article WHERE 1=1";
+    let queryParams = [];
+
+    // Dynamic filers
+    if (userId) {
+      query += " AND userId = ?";
+      queryParams.push(userId);
     }
 
-    console.log(results);
-    res.status(200).send(results);
-  });
+    if (category) {
+      query += " AND category = ?";
+      queryParams.push(category);
+    }
+    if (slug) {
+      query += " AND slug = ?";
+      queryParams.push(slug);
+    }
+    if (postId) {
+      query += " AND postId = ?";
+      queryParams.push(postId);
+    }
+    if (searchTerm) {
+      query += " AND (title LIKE ? OR content LIKE ?)";
+      queryParams.push(`%${searchTerm}%`, `%${searchTerm}%`);
+    }
+
+    // Sorting
+    const sortOrder = sortDirection === "desc" ? "DESC" : "ASC";
+    query += ` ORDER BY modifiedAt ${sortOrder}`;
+
+    // Pagination
+    const start = parseInt(startIndex) || 0;
+    const limitValue = parseInt(limit) || 10;
+    query += " LIMIT ?, ?";
+    queryParams.push(start, limitValue);
+
+    console.log("Final Query: ", query);
+    console.log("Query Parameters: ", queryParams);
+    // Fetch posts
+
+    const posts = await db.query(query, queryParams);
+
+    // Get total posts count
+    const totalResult = await db.query(
+      "SELECT COUNT(*) as totalPosts FROM access_article"
+    );
+    const totalPosts = totalResult[0].totalPosts;
+
+    // Get last month's posts countconst oneMonthAgo = new Date();
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+    const formattedDate = oneMonthAgo.toISOString().split("T")[0];
+
+    const lastMonthResult = await db.query(
+      "SELECT COUNT(*) as lastMonthPosts FROM access_article WHERE createdAt >= ?",
+      [formattedDate]
+    );
+
+    const lastMonthPosts = lastMonthResult[0].lastMonthPosts;
+
+    // Send final response once
+    res.status(200).json({ posts, totalPosts, lastMonthPosts });
+
+    // // Execute Query
+    // db.query(query, queryParams, (err, posts) => {
+    //   if (err) {
+    //     return res.status(500).json({ error: err.message });
+    //   }
+
+    //   // Total post count
+    //   db.query(
+    //     "SELECT * COUNT(*) as totalPosts FROM access_article",
+    //     (err, totalResult) => {
+    //       if (err) {
+    //         return res.status(500).json({ error: err.message });
+    //       }
+
+    //       // Posts from last month
+    //       const oneMonthAgo = new Date();
+    //       oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+    //       const formattedDate = oneMonthAgo.toISOString().split("T")[0];
+
+    //       db.query(
+    //         "SELECT COUNT(*) as lastMonthPosts FROM access_article WHERE createdAt >= ?",
+    //         [formattedDate],
+    //         (err, lastMonthResult) => {
+    //           if (err) {
+    //             return res.status(500).json({ error: err.message });
+    //           }
+    //           res.status(200).json({
+    //             posts,
+    //             totalPosts: totalResult[0].totalPosts,
+    //             lastMonthPosts: lastMonthResult[0].lastMonthPosts,
+    //           });
+    //         }
+    //       );
+    //     }
+    //   );
+    // });
+  } catch (err) {
+    console.log("Error: ", err.message);
+    res.status(500).json({ error: err.message });
+  }
+
+  // const query = "SELECT * FROM access_article ORDER BY postId DESC LIMIT 3 ";
+  // db.query(query, (err, results) => {
+  //   if (err) {
+  //     console.log("Error: ", err.stack);
+  //     return;
+  //   }
+
+  //   console.log(results);
+  //   res.status(200).send(results);
+  // });
 }
 
 async function createPost(req, res) {
@@ -145,5 +275,5 @@ module.exports = {
   createPost,
   getPost,
   updatePost,
-  deletePost
+  deletePost,
 };

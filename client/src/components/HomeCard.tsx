@@ -1,4 +1,4 @@
-function PostCard() {
+function HomeCard() {
   return (
     <>
       <div className="mx-auto my-5 flex w-4/5 justify-center self-center">
@@ -23,4 +23,4 @@ function PostCard() {
   );
 }
 
-export default PostCard;
+export default HomeCard;

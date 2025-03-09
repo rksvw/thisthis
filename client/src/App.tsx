@@ -36,7 +36,7 @@ function App() {
         <Route path="/about" element={<AboutPage />} />
       </Routes>
       <Routes>
-        <Route path="/article" element={<ArticleRead />} />
+        <Route path="/article/:postSlug" element={<ArticleRead />} />
       </Routes>
       <FooterComp />
     </>

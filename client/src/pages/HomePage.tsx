@@ -1,13 +1,13 @@
-import PostCard from "../components/PostCard"
-import SlideBar from "../components/SlideBar"
+import HomeCard from "../components/HomeCard";
+import SlideBar from "../components/SlideBar";
 
 function HomePage() {
   return (
     <>
-        <SlideBar />
-        <PostCard />
+      <SlideBar />
+      <HomeCard />
     </>
-  )
+  );
 }
 
-export default HomePage
+export default HomePage;

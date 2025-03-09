@@ -1,5 +1,4 @@
 import Article from "../components/Article";
-
 import AsideLink from "./AsideLink";
 
 function ArticleRead() {
