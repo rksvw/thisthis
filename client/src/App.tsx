@@ -9,6 +9,7 @@ import ProfilePage from "./pages/ProfilePage";
 import FooterComp from "./components/FooterComp";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
+import CreatePostPage from "./pages/CreatePostPage";
 
 function App() {
   return (
@@ -37,6 +38,9 @@ function App() {
       </Routes>
       <Routes>
         <Route path="/article/:postSlug" element={<ArticleRead />} />
+      </Routes>
+      <Routes>
+        <Route path="/create" element={<CreatePostPage />} />
       </Routes>
       <FooterComp />
     </>
