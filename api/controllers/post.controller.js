@@ -86,6 +86,7 @@ async function getPosts(req, res) {
     );
 
     const lastMonthPosts = lastMonthResult[0].lastMonthPosts;
+    console.log(posts);
 
     // Send final response once
     res.status(200).json({ posts, totalPosts, lastMonthPosts });
@@ -144,7 +145,12 @@ async function getPosts(req, res) {
 }
 
 async function createPost(req, res) {
-  const { _id, title, content, category, image } = req.body;
+  const { userId, title, content, category, image } = req.body;
+  console.log(title);
+
+  // File has been saved by multer, get the file path
+  // const filePath = `uploads/${req.files}`; // Correct file path
+  console.log(req.body);
 
   if (!title || !content) {
     console.log("Please provide all required fields");
@@ -158,8 +164,8 @@ async function createPost(req, res) {
     .replace(/[^a-zA-Z0-9-]/g, "-");
 
   const query =
-    "INSERT INTO access_article (userId, title, content, category, slug, image, modifiedAt) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP())";
-  const values = [_id, title, content, category, slug, image];
+    "INSERT INTO access_article (userId, title, content, category, slug, image) VALUES ( ?, ?, ?, ?, ?, ?)";
+  const values = [userId, title, content, category, slug, image];
 
   try {
     db.query(query, values, (err, results) => {
@@ -172,7 +178,7 @@ async function createPost(req, res) {
         message: "Post Created Successfully",
         postId: results.insertId,
         slug: slug,
-        _id: _id,
+        _id: userId,
         title: title,
         content: content,
         category: category,
@@ -196,7 +202,7 @@ async function getPost(req, res) {
         return;
       }
 
-      res.status(200).json({
+      const image = res.status(200).json({
         message: "Get post Successfully",
         _id: results[0].id,
         postId: id,

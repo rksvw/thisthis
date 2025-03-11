@@ -11,15 +11,15 @@ const app = express();
 const port = 3000;
 
 const storage = multer.diskStorage({
-  destination: "uploads/",
+  destination: "../uploads/",
   filename: (req, file, cb) => {
     cb(null, Date.now() + "-" + file.originalname);
   },
 });
 const upload = multer({ storage });
-
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ limit: "10mb", extended: true }));
+app.use(express.text())
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use("/api/user", userRoutes);
 app.use("/api/article", postRoutes);
@@ -28,6 +28,19 @@ app.put(
   upload.fields([{ name: "profile_picture" }, { name: "bg_img" }]),
   updateUser
 );
+
+app.post("/api/post/upload", upload.single("image"), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "Please select an image" });
+    }
+    const filePath = `/uploads/${req.file.filename}`;
+    res.status(200).json({ imageUrl: filePath });
+  } catch (err) {
+    console.log("Image upload error: ", err.message);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
 app.use("/uploads", express.static("uploads"));
 
 app.use(cors());

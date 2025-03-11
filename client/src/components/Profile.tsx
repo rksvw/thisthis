@@ -66,6 +66,7 @@ function Profile() {
 
     setUImageFile(file);
     setUImageFileUrl(URL.createObjectURL(file));
+    console.log(uImageFile);
   };
 
   const handleChange = (e) => {
