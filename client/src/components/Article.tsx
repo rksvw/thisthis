@@ -66,7 +66,7 @@ export default function Article() {
           {post && post.category}
         </span>
         <img
-          src={`http://localhost:3000${post.image}`}
+          src={post.image}
           alt={post && post.title}
           className="rounded-lg"
         />
@@ -88,7 +88,7 @@ export default function Article() {
         </div>
         <div className="mx-auto my-10 w-4/5">
           <div
-            className="flex items-center justify-center border-b-2 pb-5 text-start font-sans text-lg/7 text-[#252525]"
+            className="flex flex-col items-center justify-center border-b-2 pb-5 text-start font-sans text-lg/7 text-[#252525]"
             dangerouslySetInnerHTML={{ __html: post && post.content }}
           ></div>
         </div>

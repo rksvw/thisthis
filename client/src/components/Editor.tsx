@@ -24,7 +24,7 @@ function Editor() {
     console.log(e.target.files[0]);
     const file = e.target.files[0];
     if (file.size > MAX_FILE_SIZE) {
-      setImageUploadError("File size exceeds 5MB limit.");
+      setImageUploadError("File size exceeds 5MB limit");
       return;
     }
     setImage(file);
@@ -55,21 +55,31 @@ function Editor() {
     input.click();
 
     // When a file is selected
-    input.onchange = () => {
+    input.onchange = async () => {
       const file = input.files[0];
-      const reader = new FileReader();
+      if (!file) return;
 
-      // Read the selected file as a data URL
-      reader.onload = () => {
-        const imageUrl = reader.result;
+      const imageData = new FormData();
+      imageData.append("image", file);
+
+      try {
+        const res = await fetch("/api/post/upload", {
+          method: "POST",
+          body: imageData
+        })
+
+        const data = await res.json();
+        if (!res.ok || !data.imageUrl) {
+          throw new Error("Failed to upload image");
+        }
+
         const quillEditor = quill.current.getEditor();
-
-        // Get the current selection range and insert the image at that index
         const range = quillEditor.getSelection(true);
-        quillEditor.insertEmbed(range.index, "image", imageUrl, "user");
+        quillEditor.insertEmbed(range.index, "image", data.imageUrl);
         quillEditor.setSelection(range.index + 1);
-      };
-      reader.readAsDataURL(file);
+      } catch(err) {
+        console.log("Image upload Error:", err.message);
+      }
     };
   }, []);
 
@@ -101,63 +111,76 @@ function Editor() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!image && Object.keys(formData).length === 0) {
-      console.log("No changes made");
+    if (!value.trim()) {
+      console.log("Content cannot be empty");
       return;
     }
 
-    try {
-      const postData = new FormData();
+    // if (!image && Object.keys(formData).length === 0) {
+    //   console.log("No changes made");
+    //   return;
+    // }
 
-      postData.append("title", formData.title);
-      postData.append("category", formData.category);
-      postData.append("content", value);
-      postData.append("userId", currentUser._id);
+    try {
+      let imageUrl = "";
 
       if (image) {
-        const newFormData = new FormData();
-        newFormData.append("image", image);
+        const imageFormData = new FormData();
+        imageFormData.append("image", image);
 
         const uploadRes = await fetch("/api/post/upload", {
           method: "POST",
-          body: newFormData,
+          body: imageFormData,
         });
 
         const uploadData = await uploadRes.json();
         if (uploadData.imageUrl) {
-          postData.append("image", uploadData.imageUrl);
+          imageUrl = uploadData.imageUrl;
         }
       }
-      console.log(postData)
+
+      const postData = {
+        title: formData.title || "",
+        category: formData.category || "uncategorized",
+        content: value, // Editor content,
+        userId: currentUser?._id || "",
+        image: imageUrl,
+      };
 
       const res = await fetch(`api/article/create`, {
         method: "POST",
-        body: postData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postData),
       });
       const data = await res.json();
-      console.log(data);
 
-      if (data.success === false) {
-        console.log("Error", data.message);
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to publish");
       }
 
-      if (res.ok) {
-        console.log(data);
-      }
+      console.log("Article created: ", data);
     } catch (err) {
-      console.log("Getting Parse Error: ",err.message);
+      console.error("Getting Parse Error: ", err.message);
+      setPublishError(err.message);
     }
-    // If the formData is empty 
+    // If the formData is empty
     // if ()
   };
   //   Handler to handle button clicked
-  const handler = () => {
-    console.log(value);
-  };
+  // const handler = () => {
+  //   console.log(value);
+  // };
 
   useEffect(() => {
-    setFormData((prev) => ({ ...prev, category: "uncategorized" }));
-  }, []);
+    // This ensures that formData.content updates whenever the editor content changes.
+    setFormData((prev) => ({
+      ...prev,
+      category: "uncategorized",
+      content: value,
+    }));
+  }, [value]);
   return (
     <>
       <h1 className="mb-5  mt-2 flex justify-center rounded-sm border-2 bg-white py-2 font-mono text-3xl font-bold text-[#8900D9]">
@@ -238,6 +261,7 @@ function Editor() {
         <QuillEditor
           className="mt-4 h-[500px] text-white"
           theme="snow"
+          id="content"
           placeholder="Write something..."
           value={value}
           onChange={(value) => setValue(value)}
@@ -246,7 +270,6 @@ function Editor() {
           modules={modules}
         />
         <Button
-          onClick={handler}
           className="mx-auto mt-20"
           outline
           gradientDuoTone="greenToBlue"
