@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Button, Spinner } from "flowbite-react";
+import { useSelector } from "react-redux";
+import CommentSection from "./CommentSection";
+import CallToAction from "./CallToAction";
 
 export default function Article() {
+  const { currentUser, error: errMessage } = useSelector((state) => state.user);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [post, setPost] = useState(null);
@@ -62,20 +66,16 @@ export default function Article() {
         <h1 className="my-5 self-center px-5 py-3 text-center text-4xl font-bold">
           {post && post.title}
         </h1>
-        <span className="mx-auto mb-10 flex w-[100px] justify-center self-center rounded-xl border-2 border-[#8900D9] px-5 py-1 font-medium text-[#808080]">
+        <span className="mx-auto mb-10 flex w-40 justify-center self-center rounded-xl border-2 border-[#8900D9] px-5 py-1 font-medium text-[#808080]">
           {post && post.category}
         </span>
-        <img
-          src={post.image}
-          alt={post && post.title}
-          className="rounded-lg"
-        />
+        <img src={post.image} alt={post && post.title} className="rounded-lg" />
         <div className="m-5 flex justify-between border-b-2 pb-5">
-          <p className="flex text-[#808080]">
+          <p className="flex justify-center self-center text-center text-[#808080]">
             Created by:
-            <span className="pl-2 font-bold">@mrdeamio</span>
+            <span className="pl-2 font-bold">@{currentUser?.username}</span>
             <strong className="mx-2 flex items-center justify-center border-l-2 border-black text-center"></strong>
-            <span className="font-mono font-semibold text-[#808080]">
+            <span className="flex justify-center self-center text-center font-mono font-semibold text-[#808080]">
               {post && new Date(post.createdAt).toLocaleDateString()}
             </span>
           </p>
@@ -92,6 +92,8 @@ export default function Article() {
             dangerouslySetInnerHTML={{ __html: post && post.content }}
           ></div>
         </div>
+        <CallToAction />
+        <CommentSection />
       </div>
     </>
   );
