@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const multer = require("multer");
 const userRoutes = require("./routes/user.route");
+const commentRoutes = require("./routes/comment.route")
 const postRoutes = require("./routes/post.route");
 const { updateUser } = require("./controllers/user.controller");
 const app = express();
@@ -21,6 +22,7 @@ app.use(express.text());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use("/api/likes", commentRoutes)
 app.use("/api/user", userRoutes);
 app.use("/api/article", postRoutes);
 app.put(
