@@ -1,6 +1,15 @@
 import { FaThumbsUp } from "react-icons/fa";
 
 function Comment() {
+
+  // const handleUser = async() => {
+  //   try {
+  //     const res = fetch("/api/user/")
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
+
   return (
     <>
       <div className="my-5 rounded-sm border-2 px-10 py-2">
