@@ -3,9 +3,41 @@ import { IoSend } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import Comment from "./Comment";
 import { Link } from "react-router";
+import { useEffect, useRef, useState } from "react";
 
-function CommentSection({postId}) {
+function CommentSection({ postId }) {
   const { currentUser } = useSelector((state) => state.user);
+  const formRef = useRef(null);
+  const [formData, setFormData] = useState({ comment: "" });
+  let success = false;
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    setFormData({ ...formData, postId: postId, userId: currentUser?._id });
+
+    const res = await fetch("/api/likes/createcomment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        comment: formData.comment,
+        postId: formData.postId,
+        userId: formData.userId,
+      }),
+    });
+
+    if (res.ok) {
+      const data = res.json();
+      console.log(data);
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
   return (
     <>
       <div className="mx-auto w-4/5 self-center">
@@ -22,12 +54,19 @@ function CommentSection({postId}) {
               />
               <span className="text-sm">{currentUser?.username}</span>
             </div>
-            <div className="mb-10 flex gap-5">
+            <form
+              className="mb-10 flex gap-5"
+              ref={formRef}
+              onSubmit={handleSubmit}
+            >
               <TextInput
                 type="text"
                 placeholder="Comment here..."
                 id="comment"
+                name="comment"
                 className="flex-1"
+                value={formData.comment}
+                onChange={handleChange}
               />
               <Button
                 type="submit"
@@ -35,7 +74,7 @@ function CommentSection({postId}) {
               >
                 Save <IoSend className="ml-3 self-center" />
               </Button>
-            </div>
+            </form>
           </div>
         ) : (
           <div>
@@ -48,7 +87,7 @@ function CommentSection({postId}) {
           </div>
         )}
 
-        <Comment postId={postId} />
+        <Comment postId={postId} formRef={formRef} success={success} />
       </div>
     </>
   );

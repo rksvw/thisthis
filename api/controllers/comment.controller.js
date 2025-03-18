@@ -1,11 +1,31 @@
 const { db } = require("../db/sql");
 
-async function getComment(req, res) {
-  const postId  = req.params.id;
-  const query = "SELECT * FROM access_comment WHERE postId = ?";
-    const values = [postId];
+async function getUserNComment(req, res) {
+  const postId = req.params.id;
+  const query =
+    "SELECT c.commentId AS commentId, c.postId, c.userId, c.comment, c.likeCount, u.username AS username, u.profile_picture FROM access_comment c JOIN access_user u ON c.userId = u.id WHERE c.postId = ? ORDER BY c.createdAt DESC";
+  const value = [postId];
+
   try {
-    db.query(query,values, (err, results) => {
+    db.query(query, value, (err, results) => {
+      if (err) {
+        console.log("Comment Error: ", err.stack);
+        return res.status(404).json({ message: "Database Error" });
+      }
+      console.log(results);
+      res.status(200).json({ results });
+    });
+  } catch (err) {
+    console.log("server error: ", err.message);
+  }
+}
+
+async function getComment(req, res) {
+  const postId = req.params.id;
+  const query = "SELECT * FROM access_comment WHERE postId = ?";
+  const values = [postId];
+  try {
+    db.query(query, values, (err, results) => {
       if (err) {
         console.log("Comment Error: ", err.stack);
         return res.status(404).json({ message: "Database Error" });
@@ -143,5 +163,6 @@ module.exports = {
   getComment,
   createComment,
   updateComment,
-  deleteComment
+  deleteComment,
+  getUserNComment
 };
