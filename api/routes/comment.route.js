@@ -7,7 +7,7 @@ const {
 
 const router = require("express").Router();
 
-module.exports = router.get("/getcomment", getComment);
+module.exports = router.get("/getcomment/:id", getComment);
 module.exports = router.post("/createcomment", createComment);
 module.exports = router.put("/updatecomment/:id", updateComment);
 module.exports = router.delete("/deletecomment/:id", deleteComment)

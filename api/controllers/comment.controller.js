@@ -1,11 +1,11 @@
 const { db } = require("../db/sql");
 
 async function getComment(req, res) {
-  const { postId } = req.body;
-  const query = "SELECT * FROM access_comment";
-  //   const values = [postId];
+  const postId  = req.params.id;
+  const query = "SELECT * FROM access_comment WHERE postId = ?";
+    const values = [postId];
   try {
-    db.query(query, (err, results) => {
+    db.query(query,values, (err, results) => {
       if (err) {
         console.log("Comment Error: ", err.stack);
         return res.status(404).json({ message: "Database Error" });

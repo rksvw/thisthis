@@ -1,15 +1,30 @@
+import { useEffect, useState } from "react";
 import { FaThumbsUp } from "react-icons/fa";
 
-function Comment() {
+function Comment({postId}) {
+  const [totalComment, setTotalComment] = useState([]);
+  console.log(postId);
+  useEffect(() => {
+    const fetchComment = async () => {
+      try {
+        const res = await fetch(`/api/likes/getcomment/${postId}`);
+        if (res.ok) {
+          const data = await res.json();
+          setTotalComment(data.data);
+        }
+        if (!res.ok) {
+          console.log("Error fetching response");
+          return;
+        }
+      } catch (error) {
+        console.log(`Error fetching comments: ${error.message}`);
+      }
+    };
 
-  // const handleUser = async() => {
-  //   try {
-  //     const res = fetch("/api/user/")
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
+    fetchComment();
+  }, [postId]);
 
+  console.log(totalComment);
   return (
     <>
       <div className="my-5 rounded-sm border-2 px-10 py-2">
@@ -22,7 +37,7 @@ function Comment() {
           <span className="text-sm">@ritik120</span>
         </div>
         <p className="rounded-md border-2 px-5 py-2 text-gray-500">
-          I like your comment section.
+          I like it like that
         </p>
         <div className="my-3 ml-2 flex gap-2">
           <button className="text-gray-400 hover:text-blue-500" type="button">

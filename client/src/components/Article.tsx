@@ -37,7 +37,6 @@ export default function Article() {
     };
     fetchPosts();
   }, [postSlug]);
-  console.log(post);
 
   useEffect(() => {
     try {
@@ -93,7 +92,7 @@ export default function Article() {
           ></div>
         </div>
         <CallToAction />
-        <CommentSection />
+        <CommentSection postId={post.postId}/>
       </div>
     </>
   );

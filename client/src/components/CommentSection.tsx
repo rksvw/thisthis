@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import Comment from "./Comment";
 import { Link } from "react-router";
 
-function CommentSection() {
+function CommentSection({postId}) {
   const { currentUser } = useSelector((state) => state.user);
   return (
     <>
@@ -48,7 +48,7 @@ function CommentSection() {
           </div>
         )}
 
-        <Comment />
+        <Comment postId={postId} />
       </div>
     </>
   );
