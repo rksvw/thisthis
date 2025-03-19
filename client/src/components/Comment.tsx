@@ -3,28 +3,79 @@ import { FaThumbsUp } from "react-icons/fa";
 
 function Comment({ postId }) {
   const [totalComment, setTotalComment] = useState([]);
-  console.log(postId);
+  // const [likes, setLikes] = useState(totalComment.likeCount)
 
   const fetchComment = async () => {
     try {
       const res = await fetch(`/api/likes/getuc/${postId}`);
       if (res.ok) {
         const data = await res.json();
-        console.log(data.results);
         setTotalComment(data.results);
-      }
-      if (!res.ok) {
+      } else {
         console.log("Error fetching response");
-        return;
       }
     } catch (error) {
       console.log(`Error fetching comments: ${error.message}`);
     }
   };
 
-  fetchComment();
+  const likeComment = async (commentId) => {
+    try {
+      // Optimistic UI update
+      setTotalComment((prevComments) =>
+        prevComments.map((comment) =>
+          comment.commentId === commentId
+            ? {
+                ...comment,
+                likeComment: comment.likedByUser
+                  ? comment.likeCount - 1
+                  : comment.likeCount + 1,
+                likedByUser: !comment.likedByUser,
+              }
+            : comment,
+        ),
+      );
 
-  console.log(totalComment);
+      const res = await fetch(`/api/likes/update/like/${commentId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: totalComment.userId }),
+      });
+
+      if (!res.ok) {
+        console.log("Failed to like comment");
+        setTotalComment((prevComments) =>
+          prevComments.map((comment) =>
+            comment.commentId === commentId
+              ? {
+                  ...comment,
+                  likeCount: comment.likedByUser
+                    ? comment.likeCount + 1
+                    : comment.likeCount - 1,
+                  likedByUser: !comment.likedByUser,
+                }
+              : comment,
+          ),
+        );
+      }
+    } catch (err) {
+      console.log("Error updating likes: ", err.message);
+      return;
+    }
+  };
+
+  useEffect(() => {
+    fetchComment();
+  }, []);
+
+  // const handleLike = async (e) => {
+  //   e.preventDefault();
+  //   const res = await fetch('/api/likes/like', {
+
+  //   })
+  // };
 
   return (
     <>
@@ -38,7 +89,7 @@ function Comment({ postId }) {
               <img
                 src={`http://localhost:3000${comment.profile_picture}`}
                 alt="Profile"
-                className="my-5 size-9 rounded-full border-2 border-orange-300"
+                className="my-5 size-8 rounded-full border-2 border-orange-300"
               />
               <span className="text-sm">@{comment.username}</span>
             </div>
@@ -47,12 +98,19 @@ function Comment({ postId }) {
             </p>
             <div className="my-3 ml-2 flex gap-2">
               <button
-                className="text-gray-400 hover:text-blue-500"
+                className={`text-gray-400 hover:text-blue-500 ${comment.likedByUser ? "text-blue-500" : "text-gray-400"}`}
                 type="button"
+                onClick={() => likeComment(comment.commentId)}
               >
-                <FaThumbsUp className="text-sm" />
+                <FaThumbsUp className="text-sm" /> {comment.likeCount}
               </button>
-              <p className="text-gray-400">{comment.likeCount} likes</p>
+              {/* <button className="text-gray-400">
+                {comment.likeCount == null
+                  ? "0 like"
+                  : comment.likeCount > 1
+                    ? comment.likeCount + " likes"
+                    : "1 like"}
+              </button> */}
             </div>
           </div>
         ))}

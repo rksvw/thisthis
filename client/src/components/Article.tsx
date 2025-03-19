@@ -18,9 +18,9 @@ export default function Article() {
       try {
         setLoading(true);
         const res = await fetch(`/api/article/getposts?slug=${postSlug}`);
-        const data = await res.json();
-        console.log(data);
         if (res.ok) {
+          const data = await res.json();
+          console.log(data)
           setPost(data.posts[0]);
           setLoading(false);
         }
@@ -92,7 +92,7 @@ export default function Article() {
           ></div>
         </div>
         <CallToAction />
-        <CommentSection postId={post.postId}/>
+        <CommentSection postId={post.postId} />
       </div>
     </>
   );

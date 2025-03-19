@@ -87,7 +87,7 @@ function CommentSection({ postId }) {
           </div>
         )}
 
-        <Comment postId={postId} formRef={formRef} success={success} />
+        <Comment postId={postId} />
       </div>
     </>
   );
