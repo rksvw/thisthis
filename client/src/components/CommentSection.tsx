@@ -9,12 +9,34 @@ function CommentSection({ postId }) {
   const { currentUser } = useSelector((state) => state.user);
   const formRef = useRef(null);
   const [formData, setFormData] = useState({ comment: "" });
-  let success = false;
+  const [totalComment, setTotalComment] = useState([]);
+  // const [likes, setLikes] = useState(totalComment.likeCount)
+  useEffect(() => {
+    setFormData({
+      ...formData,
+      postId: postId,
+      userId: parseInt(currentUser._id),
+    });
+    fetchComment();
+  }, []);
+
+  const fetchComment = async () => {
+    try {
+      const res = await fetch(`/api/likes/getuc/${postId}`);
+      if (res.ok) {
+        const data = await res.json();
+        console.log(data.results);
+        setTotalComment(data.results);
+      } else {
+        console.log("Error fetching response");
+      }
+    } catch (error) {
+      console.log(`Error fetching comments: ${error.message}`);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    setFormData({ ...formData, postId: postId, userId: currentUser?._id });
 
     const res = await fetch("/api/likes/createcomment", {
       method: "POST",
@@ -27,10 +49,10 @@ function CommentSection({ postId }) {
         userId: formData.userId,
       }),
     });
-
     if (res.ok) {
-      const data = res.json();
-      console.log(data);
+      await res.json();
+      fetchComment();
+    } else {
     }
   };
 
@@ -87,7 +109,7 @@ function CommentSection({ postId }) {
           </div>
         )}
 
-        <Comment postId={postId} />
+        <Comment totalComment={totalComment} setTotalComment={setTotalComment} userId={currentUser._id} />
       </div>
     </>
   );

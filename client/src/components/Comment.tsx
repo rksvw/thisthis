@@ -1,24 +1,7 @@
 import { useEffect, useState } from "react";
 import { FaThumbsUp } from "react-icons/fa";
 
-function Comment({ postId }) {
-  const [totalComment, setTotalComment] = useState([]);
-  // const [likes, setLikes] = useState(totalComment.likeCount)
-
-  const fetchComment = async () => {
-    try {
-      const res = await fetch(`/api/likes/getuc/${postId}`);
-      if (res.ok) {
-        const data = await res.json();
-        setTotalComment(data.results);
-      } else {
-        console.log("Error fetching response");
-      }
-    } catch (error) {
-      console.log(`Error fetching comments: ${error.message}`);
-    }
-  };
-
+function Comment({ totalComment, setTotalComment, userId }) {
   const likeComment = async (commentId) => {
     try {
       // Optimistic UI update
@@ -41,7 +24,7 @@ function Comment({ postId }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ userId: totalComment.userId }),
+        body: JSON.stringify({ userId: userId }),
       });
 
       if (!res.ok) {
@@ -66,16 +49,14 @@ function Comment({ postId }) {
     }
   };
 
-  useEffect(() => {
-    fetchComment();
-  }, []);
-
   // const handleLike = async (e) => {
   //   e.preventDefault();
   //   const res = await fetch('/api/likes/like', {
 
   //   })
   // };
+
+  console.log(totalComment);
 
   return (
     <>
@@ -98,11 +79,21 @@ function Comment({ postId }) {
             </p>
             <div className="my-3 ml-2 flex gap-2">
               <button
-                className={`text-gray-400 hover:text-blue-500 ${comment.likedByUser ? "text-blue-500" : "text-gray-400"}`}
+                className={`flex items-center justify-center gap-2 hover:text-blue-500 ${comment.likedByUser ? "text-blue-500" : "text-gray-400"}`}
                 type="button"
                 onClick={() => likeComment(comment.commentId)}
               >
-                <FaThumbsUp className="text-sm" /> {comment.likeCount}
+                <FaThumbsUp className="text-sm" />{" "}
+                <span className="flex items-center justify-center text-center ">
+                  {comment.likeComment < 0 ||
+                  comment.likeComment === undefined ||
+                  comment.likeComment === null ||
+                  !comment.likeComment
+                    ? "0 likes"
+                    : comment.likeComment == 1
+                      ? comment.likeComment + " like"
+                      : comment.likeComment + " likes"}
+                </span>
               </button>
               {/* <button className="text-gray-400">
                 {comment.likeCount == null

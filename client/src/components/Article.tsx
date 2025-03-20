@@ -9,8 +9,8 @@ export default function Article() {
   const { currentUser, error: errMessage } = useSelector((state) => state.user);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [post, setPost] = useState(null);
-  const [recentPost, setRecentPost] = useState(null);
+  const [post, setPost] = useState({});
+  const [recentPost, setRecentPost] = useState({});
   const { postSlug } = useParams();
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export default function Article() {
         const res = await fetch(`/api/article/getposts?slug=${postSlug}`);
         if (res.ok) {
           const data = await res.json();
-          console.log(data)
+          console.log(data.posts[0])
           setPost(data.posts[0]);
           setLoading(false);
         }
