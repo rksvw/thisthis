@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { FaThumbsUp } from "react-icons/fa";
 
 function Comment({ totalComment, setTotalComment, userId }) {
+
+
   const likeComment = async (commentId) => {
     try {
       // Optimistic UI update

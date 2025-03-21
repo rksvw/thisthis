@@ -12,6 +12,7 @@ import SignupPage from "./pages/SignupPage";
 import CreatePostPage from "./pages/CreatePostPage";
 
 function App() {
+
   return (
     <>
       <Header />

@@ -15,15 +15,16 @@ import { useDispatch, useSelector } from "react-redux";
 export default function Login() {
   const [formData, setFormData] = useState({});
   const { loading, error: errMessage } = useSelector((state) => state.user);
+  const [startLoading, setStartLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
-    console.log(formData);
   };
 
   const handleSubmit = async (e) => {
+    setStartLoading(loading);
     e.preventDefault();
 
     if (
@@ -116,10 +117,10 @@ export default function Login() {
             <button
               type="submit"
               id="login"
-              disabled={loading}
+              disabled={startLoading}
               className="h-[39px] w-[158px] cursor-pointer"
             >
-              {loading ? (
+              {startLoading ? (
                 <>
                   <Spinner size={"sm"} />
                   <span className="pl-3">Loading...</span>

@@ -288,16 +288,16 @@ async function forgotPass(req, res) {
 async function signin(req, res, next) {
   const { email, password } = req.body;
 
-  if (email !== "" && password !== "") {
+  if (email === "" || password === "" || !email || !password) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
   db.query(
-    "SELECT * FORM access_user WHERE email = ?",
+    "SELECT * FROM access_user WHERE email = ?",
     [email],
     async (error, results) => {
       if (error) {
-        return next(errorHandler(500, "Database error"));
+        return next(errorHandler(500, `Database error: ${error.stack}`));
       }
 
       if (results.length === 0) {
@@ -329,16 +329,14 @@ async function signin(req, res, next) {
         })
         .json({
           message: "Login successful",
-          user: {
-            _id: user.id,
-            fullname: user.fullname,
-            username: user.username,
-            email: user.email,
-            profile_picture: user.profile_picture,
-            timestamps: user.timestamps,
-            bgImg: user.bg_img,
-            isAdmin: user.isAdmin,
-          },
+          _id: user.id,
+          fullname: user.fullname,
+          username: user.username,
+          email: user.email,
+          profile_picture: user.profile_picture,
+          timestamps: user.timestamps,
+          bgImg: user.bg_img,
+          isAdmin: user.isAdmin,
           token,
         });
     }

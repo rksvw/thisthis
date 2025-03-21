@@ -146,11 +146,9 @@ async function getPosts(req, res) {
 
 async function createPost(req, res) {
   const { userId, title, content, category, image } = req.body;
-  console.log(title);
 
   // File has been saved by multer, get the file path
   // const filePath = `uploads/${req.files}`; // Correct file path
-  console.log(req.body);
 
   if (!title || !content) {
     console.log("Please provide all required fields");

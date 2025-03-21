@@ -60,6 +60,8 @@ function CommentSection({ postId }) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  console.log(totalComment)
+
   return (
     <>
       <div className="mx-auto w-4/5 self-center">

@@ -13,6 +13,7 @@ import { PiSignOutFill } from "react-icons/pi";
 import "../index.css";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import CreatePost from "./CreatePost";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
@@ -157,8 +158,8 @@ function Profile() {
             <img
               src={`http://localhost:3000${
                 currentUser.profilePicture === null
-                  ? false
-                  : currentUser.profilePicture || profile_picture
+                  ? profile_picture
+                  : currentUser.profilePicture
               }`}
               alt=""
               className="size-full rounded-full border-4 border-[lightgray] object-cover"
@@ -219,6 +220,7 @@ function Profile() {
             </button>
           </div>
         </form>
+        <CreatePost />
       </div>
     </>
   );

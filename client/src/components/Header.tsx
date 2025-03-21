@@ -9,9 +9,9 @@ function Header() {
     <>
       <Navbar className="fixed left-0 top-0 z-20 w-full border-b-2 border-[#8900D9] bg-[#1A0726]">
         <div className="flex h-10 w-32 cursor-pointer justify-center self-center rounded-md bg-gradient-to-r from-[#447fcc] to-[#3d079b] text-center">
-          <span className="px-4 py-1 font-sans text-2xl font-semibold text-white">
+          <Link to={"/"} className="px-4 py-1 font-sans text-2xl font-semibold text-white">
             Fidhiss
-          </span>
+          </Link>
         </div>
         <form className="">
           <TextInput

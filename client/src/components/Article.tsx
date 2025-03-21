@@ -20,7 +20,7 @@ export default function Article() {
         const res = await fetch(`/api/article/getposts?slug=${postSlug}`);
         if (res.ok) {
           const data = await res.json();
-          console.log(data.posts[0])
+          console.log(data.posts[0]);
           setPost(data.posts[0]);
           setLoading(false);
         }
@@ -59,6 +59,7 @@ export default function Article() {
         <Spinner size={"xl"} />
       </div>
     );
+
   return (
     <>
       <div className=" my-8 ml-14 w-[72%] self-center rounded-sm bg-[#fff] p-[25px]">
@@ -72,16 +73,18 @@ export default function Article() {
         <div className="m-5 flex justify-between border-b-2 pb-5">
           <p className="flex justify-center self-center text-center text-[#808080]">
             Created by:
-            <span className="pl-2 font-bold">@{currentUser?.username}</span>
-            <strong className="mx-2 flex items-center justify-center border-l-2 border-black text-center"></strong>
-            <span className="flex justify-center self-center text-center font-mono font-semibold text-[#808080]">
+            <span className="self-center pl-2 font-bold">
+              @{currentUser?.username}
+            </span>
+            <strong className="mx-2 flex items-center justify-center  border-l-2 border-black text-center"></strong>
+            <span className="flex items-center justify-center self-center pt-1 text-center font-mono font-semibold text-[#808080]">
               {post && new Date(post.createdAt).toLocaleDateString()}
             </span>
           </p>
           <p className="text-[#808080]">
             Read:
             <span className="pl-2 font-mono font-semibold">
-              {post && (post.content.length / 1000).toFixed(0)}, minutes read
+              {post && (post.content.length / 1000).toFixed(0)} minutes read
             </span>
           </p>
         </div>

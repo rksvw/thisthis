@@ -4,6 +4,7 @@ import "react-quill/dist/quill.snow.css";
 import { Button, TextInput, FileInput, Select, Alert } from "flowbite-react";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
@@ -14,6 +15,7 @@ function Editor() {
   const [imageUploadError, setImageUploadError] = useState(null);
   const [publishError, setPublishError] = useState(null);
   // Editor state
+  const navigate = useNavigate();
   const [value, setValue] = useState("");
   const { currentUser, error, loading } = useSelector((state) => state.user);
 
@@ -65,8 +67,8 @@ function Editor() {
       try {
         const res = await fetch("/api/post/upload", {
           method: "POST",
-          body: imageData
-        })
+          body: imageData,
+        });
 
         const data = await res.json();
         if (!res.ok || !data.imageUrl) {
@@ -77,7 +79,7 @@ function Editor() {
         const range = quillEditor.getSelection(true);
         quillEditor.insertEmbed(range.index, "image", data.imageUrl);
         quillEditor.setSelection(range.index + 1);
-      } catch(err) {
+      } catch (err) {
         console.log("Image upload Error:", err.message);
       }
     };
@@ -154,13 +156,14 @@ function Editor() {
         },
         body: JSON.stringify(postData),
       });
-      const data = await res.json();
+      if (res.ok) {
+        const data = await res.json();
+        navigate(`/article/${data.slug}`);
+      }
 
       if (!res.ok) {
         throw new Error(data.message || "Failed to publish");
       }
-
-      console.log("Article created: ", data);
     } catch (err) {
       console.error("Getting Parse Error: ", err.message);
       setPublishError(err.message);
